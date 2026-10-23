@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101015">
+  <meta name="description" content="Spin the wheel. Meet your extremely questionable destiny.">
+  <title>Wheel of Impossible Destiny</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    :root {
+      color-scheme: dark;
+      --ink: #f3f1ed;
+      --muted: #85858d;
+      --dim: #51515b;
+      --night: #101015;
+      --panel: #17171e;
+      --line: rgba(255,255,255,.09);
+      --acid: #d5ff3f;
+      --hot: #ff5368;
+      --violet: #aa8cff;
+      --cyan: #70e7ef;
+      --mono: 'DM Mono', monospace;
+      --sans: 'Space Grotesk', sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { min-width: 320px; background: var(--night); }
+    body {
+      margin: 0; min-height: 100vh; color: var(--ink); font-family: var(--sans);
+      background:
+        radial-gradient(ellipse at 50% 42%, rgba(115,84,170,.12), transparent 37%),
+        radial-gradient(ellipse at 15% 90%, rgba(213,255,63,.045), transparent 30%),
+        #101015;
+      overflow-x: hidden;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0; opacity: .15;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.88' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.25'/%3E%3C/svg%3E");
+      mix-blend-mode: screen;
+    }
+    button { font: inherit; }
+    .shell { position: relative; z-index: 1; max-width: 1440px; padding: 0 46px; margin: auto; }
+    .topbar { height: 78px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--ink); font-size: 13px; font-weight: 700; letter-spacing: -.02em; }
+    .brand-mark { width: 31px; height: 31px; display: grid; place-items: center; border: 1px solid rgba(213,255,63,.54); border-radius: 50%; color: var(--acid); font-family: var(--mono); font-size: 16px; box-shadow: inset 0 0 15px rgba(213,255,63,.07), 0 0 16px rgba(213,255,63,.08); }
+    .brand-note { font: 10px var(--mono); color: var(--muted); letter-spacing: .04em; padding-left: 12px; border-left: 1px solid var(--line); }
+    .top-actions { display: flex; align-items: center; gap: 22px; }
+    .status { display: flex; align-items: center; gap: 8px; font: 10px var(--mono); color: #a7a7ad; letter-spacing: .12em; text-transform: uppercase; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--acid); box-shadow: 0 0 11px var(--acid); }
+    .sound-toggle { border: 1px solid var(--line); background: rgba(255,255,255,.025); color: #c8c7ca; padding: 9px 12px; border-radius: 7px; display: flex; gap: 8px; align-items: center; font: 10px var(--mono); letter-spacing: .09em; cursor: pointer; transition: border-color .2s, color .2s, transform .2s; }
+    .sound-toggle:hover { border-color: rgba(213,255,63,.5); color: var(--acid); transform: translateY(-1px); }
+    .sound-icon { width: 13px; height: 13px; display: block; }
+    main { padding: 34px 0 40px; }
+    .intro { text-align: center; margin: 1px auto 10px; }
+    .eyebrow { color: var(--acid); font: 10px var(--mono); letter-spacing: .23em; text-transform: uppercase; margin: 0 0 13px; }
+    h1 { font-size: clamp(36px, 5.1vw, 66px); line-height: .98; letter-spacing: -.075em; margin: 0; font-weight: 700; }
+    h1 span { color: var(--acid); }
+    .subhead { margin: 15px 0 0; color: #93929b; font-size: 14px; letter-spacing: -.015em; }
+    .arena { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(390px, 550px) minmax(180px, 1fr); align-items: center; gap: 28px; margin: 28px auto 0; max-width: 1150px; }
+    .side-card { position: relative; min-height: 232px; padding: 21px 19px 18px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(145deg, rgba(255,255,255,.04), rgba(255,255,255,.012)); overflow: hidden; }
+    .side-card::after { content: ""; position: absolute; width: 95px; height: 95px; border-radius: 50%; right: -49px; top: -47px; background: var(--accent, var(--acid)); opacity: .09; filter: blur(1px); }
+    .card-kicker { display: flex; align-items: center; gap: 8px; color: var(--muted); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .14em; }
+    .tiny-mark { width: 6px; height: 6px; border-radius: 2px; transform: rotate(45deg); background: var(--accent, var(--acid)); }
+    .side-card h2 { margin: 23px 0 7px; font-size: 17px; letter-spacing: -.04em; line-height: 1.18; font-weight: 600; }
+    .card-copy { color: #8b8993; font-size: 11px; line-height: 1.6; margin: 0; }
+    .metric { margin-top: 19px; display: flex; align-items: baseline; gap: 7px; }
+    .metric strong { font-size: 28px; letter-spacing: -.07em; font-weight: 600; }
+    .metric span { color: var(--muted); font: 9px var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+    .progress { width: 100%; height: 3px; background: rgba(255,255,255,.08); margin-top: 9px; border-radius: 5px; overflow: hidden; }
+    .progress i { display: block; width: 68%; height: 100%; background: var(--accent, var(--acid)); box-shadow: 0 0 10px var(--accent, var(--acid)); }
+    .right-card { --accent: var(--violet); }
+    .right-card h2 { margin-top: 20px; }
+    .omen-list { display: grid; gap: 10px; margin-top: 16px; }
+    .omen { display: flex; justify-content: space-between; gap: 8px; color: #aaa8b0; font-size: 10px; }
+    .omen em { color: var(--dim); font: normal 9px var(--mono); }
+    .wheel-stage { min-width: 0; position: relative; display: flex; flex-direction: column; align-items: center; }
+    .wheel-wrap { position: relative; width: min(100%, 500px); aspect-ratio: 1; display: grid; place-items: center; isolation: isolate; }
+    .wheel-wrap::before { content: ""; position: absolute; width: 92%; height: 92%; border: 1px solid rgba(213,255,63,.16); border-radius: 50%; box-shadow: 0 0 55px rgba(213,255,63,.055), inset 0 0 50px rgba(170,140,255,.04); }
+    .wheel-wrap::after { content: ""; position: absolute; inset: 3%; border: 1px dashed rgba(255,255,255,.1); border-radius: 50%; animation: orbit 54s linear infinite; }
+    @keyframes orbit { to { transform: rotate(360deg); } }
+    #wheel { width: 86%; height: 86%; border-radius: 50%; position: relative; z-index: 1; filter: drop-shadow(0 14px 35px rgba(0,0,0,.48)); }
+    .pointer { z-index: 4; position: absolute; top: 3.7%; left: 50%; transform: translateX(-50%); width: 35px; height: 45px; filter: drop-shadow(0 3px 11px rgba(213,255,63,.4)); }
+    .pointer svg { width: 100%; height: 100%; overflow: visible; }
+    .hub { position: absolute; width: 78px; height: 78px; border-radius: 50%; z-index: 3; display: grid; place-items: center; color: var(--acid); background: radial-gradient(circle at 37% 32%, #292b21, #151619 67%); border: 2px solid rgba(213,255,63,.75); box-shadow: 0 0 0 5px rgba(16,16,21,.72), 0 0 29px rgba(213,255,63,.17), inset 0 0 15px rgba(213,255,63,.12); }
+    .hub span { font: 11px var(--mono); letter-spacing: -.12em; transform: rotate(-12deg); }
+    .wheel-caption { position: absolute; bottom: 6%; z-index: 4; font: 8px var(--mono); letter-spacing: .22em; color: rgba(255,255,255,.54); text-transform: uppercase; }
+    .spin-button { position: relative; margin-top: -3px; min-width: 220px; padding: 15px 25px; color: #101015; background: var(--acid); border: 0; border-radius: 7px; font-size: 12px; font-weight: 700; letter-spacing: .13em; cursor: pointer; box-shadow: 0 0 26px rgba(213,255,63,.18), 0 4px 0 #8fae28; transition: transform .16s, box-shadow .16s, filter .2s; }
+    .spin-button::before { content: ""; position: absolute; inset: 1px; border-radius: 6px; border: 1px solid rgba(255,255,255,.34); pointer-events: none; }
+    .spin-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 0 34px rgba(213,255,63,.3), 0 6px 0 #8fae28; filter: brightness(1.05); }
+    .spin-button:active:not(:disabled) { transform: translateY(3px) scale(.99); box-shadow: 0 0 18px rgba(213,255,63,.16), 0 1px 0 #8fae28; }
+    .spin-button:disabled { cursor: wait; opacity: .75; }
+    .spin-note { margin: 13px 0 0; color: #6e6c75; font: 9px var(--mono); letter-spacing: .13em; text-transform: uppercase; }
+    .result-panel { width: 100%; max-width: 410px; min-height: 82px; margin-top: 20px; display: flex; align-items: center; gap: 14px; padding: 14px 17px; border: 1px solid rgba(255,255,255,.09); border-radius: 9px; background: rgba(255,255,255,.025); transition: border-color .35s, background .35s, transform .35s; }
+    .result-panel.revealed { border-color: rgba(213,255,63,.35); background: rgba(213,255,63,.045); animation: reveal .55s cubic-bezier(.2,1.6,.35,1); }
+    @keyframes reveal { 0% { transform: scale(.92); } 100% { transform: scale(1); } }
+    .result-icon { flex: 0 0 34px; width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid rgba(213,255,63,.32); color: var(--acid); border-radius: 50%; font: 12px var(--mono); }
+    .result-text { min-width: 0; }
+    .result-label { color: #777680; font: 8px var(--mono); letter-spacing: .18em; text-transform: uppercase; margin-bottom: 4px; }
+    .result-value { color: #eae9e6; font-size: 13px; font-weight: 600; letter-spacing: -.02em; }
+    .result-panel.revealed .result-value { color: var(--acid); }
+    .result-count { margin-left: auto; align-self: flex-end; white-space: nowrap; color: #686771; font: 9px var(--mono); }
+    .lower { max-width: 1150px; margin: 30px auto 0; border-top: 1px solid var(--line); padding-top: 17px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .lower-label { color: #73717a; font: 9px var(--mono); text-transform: uppercase; letter-spacing: .16em; }
+    .streak { display: flex; gap: 7px; align-items: center; }
+    .streak b { width: 8px; height: 8px; border: 1px solid #4a4a51; border-radius: 50%; }
+    .streak b.active { border-color: var(--hot); background: var(--hot); box-shadow: 0 0 9px rgba(255,83,104,.55); }
+    .history { display: flex; align-items: center; gap: 9px; }
+    .history-title { margin-right: 5px; color: #777680; font: 9px var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+    .history-chip { max-width: 130px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 6px 9px; border-radius: 5px; border: 1px solid var(--line); color: #aaa8b0; font-size: 9px; background: rgba(255,255,255,.02); }
+    .history-empty { color: #5f5d65; font: 9px var(--mono); }
+    footer { padding: 25px 0 29px; display: flex; justify-content: space-between; align-items: center; color: #55545d; border-top: 1px solid rgba(255,255,255,.06); font: 9px var(--mono); letter-spacing: .08em; }
+    footer strong { color: #85838d; font-weight: 400; }
+    #particles { position: fixed; inset: 0; z-index: 5; pointer-events: none; width: 100%; height: 100%; }
+    .shake { animation: shake .4s ease-in-out; }
+    @keyframes shake { 0%,100% { transform: translate(0,0) } 20% { transform: translate(-5px,2px) } 45% { transform: translate(4px,-2px) } 70% { transform: translate(-2px,1px) } }
+    @media (min-width: 1100px) { main { padding-top: 39px; } }
+    @media (max-width: 950px) {
+      .shell { padding: 0 27px; }
+      .arena { grid-template-columns: minmax(140px, .8fr) minmax(340px, 1.7fr) minmax(140px, .8fr); gap: 16px; }
+      .side-card { padding: 17px 14px; min-height: 215px; }
+      .wheel-wrap { width: min(100%, 440px); }
+      .hub { width: 67px; height: 67px; }
+    }
+    @media (max-width: 700px) {
+      .shell { padding: 0 20px; }
+      .topbar { height: 66px; }
+      .brand { font-size: 11px; gap: 9px; }
+      .brand-mark { width: 28px; height: 28px; }
+      .brand-note, .status { display: none; }
+      main { padding-top: 31px; }
+      .intro { margin-bottom: 4px; }
+      h1 { font-size: clamp(39px, 10vw, 57px); }
+      .subhead { font-size: 12px; line-height: 1.5; max-width: 300px; margin: 13px auto 0; }
+      .arena { display: flex; flex-direction: column; gap: 20px; margin-top: 16px; }
+      .wheel-stage { order: 0; width: 100%; }
+      .wheel-wrap { width: min(100%, 410px); }
+      .side-card { width: 100%; min-height: 0; display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 13px 15px; }
+      .side-card .card-kicker { grid-column: 1; }
+      .side-card h2 { grid-column: 1; margin: 9px 0 3px; font-size: 14px; }
+      .side-card .card-copy { grid-column: 1; }
+      .side-card .metric { grid-column: 2; grid-row: 1 / span 3; margin: 0; }
+      .side-card .progress { grid-column: 1 / -1; margin-top: 12px; }
+      .right-card { display: none; }
+      .lower { margin-top: 25px; flex-wrap: wrap; }
+      .lower-label { display: none; }
+      footer { margin-top: 26px; flex-direction: column; gap: 8px; align-items: flex-start; }
+    }
+    @media (max-width: 420px) {
+      .shell { padding: 0 15px; }
+      .wheel-wrap { width: min(100%, 365px); }
+      .spin-button { min-width: 205px; }
+      .history { width: 100%; flex-wrap: wrap; }
+      .history-chip { max-width: calc(50vw - 48px); }
+      .result-panel { margin-top: 16px; }
+      .sound-toggle { padding: 8px 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="particles" aria-hidden="true"></canvas>
+  <div class="shell" id="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">?</span><span>IMPOSSIBLE DESTINY</span><span class="brand-note">VOL. 01 / FATE ENGINE</span></div>
+      <div class="top-actions">
+        <div class="status"><span class="status-dot"></span>ENGINE UNSTABLE</div>
+        <button class="sound-toggle" id="soundToggle" type="button" aria-pressed="false" aria-label="Turn sound on">
+          <svg class="sound-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2 6v4h3l4 3V3L5 6H2Z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M11 5.5a4 4 0 0 1 0 5M12.8 3.5a7 7 0 0 1 0 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <span id="soundLabel">SOUND OFF</span>
+        </button>
+      </div>
+    </header>
+    <main>
+      <section class="intro" aria-labelledby="title">
+        <p class="eyebrow">A highly questionable decision device</p>
+        <h1 id="title">Wheel of <span>Impossible</span><br>Destiny</h1>
+        <p class="subhead">No skill required. No appeals accepted. Your fate is about to get weird.</p>
+      </section>
+      <section class="arena" aria-label="Destiny wheel arcade">
+        <aside class="side-card left-card">
+          <div class="card-kicker"><i class="tiny-mark"></i> FATE TELEMETRY</div>
+          <h2>Chaos levels: <span style="color:var(--acid)">concerning</span></h2>
+          <p class="card-copy">Probability has left the building. The wheel insists it knows best.</p>
+          <div class="metric"><strong id="spinCount">00</strong><span>spins logged</span></div>
+          <div class="progress"><i></i></div>
+        </aside>
+        <div class="wheel-stage">
+          <div class="wheel-wrap" id="wheelWrap">
+            <div class="pointer" aria-hidden="true"><svg viewBox="0 0 36 48"><path d="M18 46 2.8 10.2C.6 5 4.4 0 10 0h16c5.6 0 9.4 5 7.2 10.2L18 46Z" fill="#d5ff3f" stroke="#f3ffc0" stroke-width="1.5"/><circle cx="18" cy="9" r="3" fill="#191a15"/></svg></div>
+            <canvas id="wheel" aria-label="A colorful wheel of possible fates"></canvas>
+            <div class="hub"><span>SPIN</span></div>
+            <div class="wheel-caption">DESTINY / DO NOT QUESTION</div>
+          </div>
+          <button class="spin-button" id="spinButton" type="button">SPIN THE WHEEL <span aria-hidden="true">↗</span></button>
+          <p class="spin-note" id="spinNote">Tap in. Find out. Regret nothing.</p>
+          <div class="result-panel" id="resultPanel" aria-live="polite">
+            <div class="result-icon" id="resultIcon">?</div>
+            <div class="result-text"><div class="result-label">YOUR DESTINY AWAITS</div><div class="result-value" id="resultValue">The universe is holding its breath.</div></div>
+            <div class="result-count" id="resultIndex">— / 12</div>
+          </div>
+        </div>
+        <aside class="side-card right-card">
+          <div class="card-kicker"><i class="tiny-mark"></i> RECENT OMENS</div>
+          <h2>Things that may happen</h2>
+          <p class="card-copy">A brief preview of the deeply unserious future.</p>
+          <div class="omen-list">
+            <div class="omen"><span>Unexpected fame</span><em>01</em></div>
+            <div class="omen"><span>Suspiciously good luck</span><em>02</em></div>
+            <div class="omen"><span>Becoming a legend</span><em>03</em></div>
+          </div>
+        </aside>
+      </section>
+      <section class="lower" aria-label="Arcade session">
+        <div class="lower-label">LUCK METER <span style="color:var(--hot)">/</span> <span id="luckText">UNTESTED</span></div>
+        <div class="streak" aria-label="Luck streak"><b></b><b></b><b></b><b></b><b></b></div>
+        <div class="history"><span class="history-title">LAST FATES</span><span class="history-empty" id="historyEmpty">Nothing decided yet.</span><span id="historyItems" style="display:contents"></span></div>
+      </section>
+    </main>
+    <footer><span>AN ARCADE FOR THE IMPOSSIBLY CURIOUS</span><strong>Created by Student 150096725032</strong></footer>
+  </div>
+  <script>
+    (() => {
+      const fates = [
+        { title: 'You are now the mayor of a very small puddle.', tag: 'PUDDLE MAYOR', color: '#d5ff3f', icon: '01' },
+        { title: 'A goose has added you to its enemies list.', tag: 'GOOSE ENEMY', color: '#ff6682', icon: '02' },
+        { title: 'You have excellent hair in every alternate universe.', tag: 'MULTIVERSE HAIR', color: '#a88cff', icon: '03' },
+        { title: 'Your left sock knows the entire truth.', tag: 'SOCK PROPHECY', color: '#65dfea', icon: '04' },
+        { title: 'A tiny orchestra will follow you for a day.', tag: 'POCKET SYMPHONY', color: '#ff9a5e', icon: '05' },
+        { title: 'You owe the moon one sincere compliment.', tag: 'LUNAR DEBT', color: '#d5ff3f', icon: '06' },
+        { title: 'The next chair you meet is mildly impressed.', tag: 'CHAIR APPROVAL', color: '#ff6682', icon: '07' },
+        { title: 'You become a cryptid, but a very approachable one.', tag: 'FRIENDLY CRYPTID', color: '#a88cff', icon: '08' },
+        { title: 'Your aura has been upgraded to premium.', tag: 'AURA PLUS', color: '#65dfea', icon: '09' },
+        { title: 'A dramatic breeze will arrive on cue.', tag: 'MAIN CHARACTER WIND', color: '#ff9a5e', icon: '10' },
+        { title: 'You are legally interesting to three pigeons.', tag: 'PIGEON FAME', color: '#d5ff3f', icon: '11' },
+        { title: 'The universe owes you a snack. Collect soon.', tag: 'SNACK PROPHECY', color: '#ff6682', icon: '12' }
+      ];
+      const wheel = document.getElementById('wheel');
+      const ctx = wheel.getContext('2d');
+      const wrap = document.getElementById('wheelWrap');
+      const spinButton = document.getElementById('spinButton');
+      const soundToggle = document.getElementById('soundToggle');
+      const shell = document.getElementById('app');
+      const particleCanvas = document.getElementById('particles');
+      const pctx = particleCanvas.getContext('2d');
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      let rotation = 0, spinning = false, spins = 0, soundOn = false;
+      let audioContext = null, lastTickSlice = -1, particles = [], history = [];
+      const TAU = Math.PI * 2, slice = TAU / fates.length;
+
+      function fitCanvas() {
+        const rect = wheel.getBoundingClientRect(), dpr = Math.min(window.devicePixelRatio || 1, 2);
+        wheel.width = Math.round(rect.width * dpr); wheel.height = Math.round(rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0); drawWheel();
+        particleCanvas.width = Math.round(innerWidth * dpr); particleCanvas.height = Math.round(innerHeight * dpr);
+        particleCanvas.style.width = innerWidth + 'px'; particleCanvas.style.height = innerHeight + 'px';
+        pctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+      function drawWheel() {
+        const w = wheel.clientWidth, h = wheel.clientHeight, cx = w / 2, cy = h / 2, r = Math.min(w, h) / 2 - 3;
+        ctx.clearRect(0, 0, w, h);
+        ctx.save(); ctx.translate(cx, cy); ctx.rotate(rotation);
+        fates.forEach((f, i) => {
+          const start = -Math.PI / 2 + i * slice, end = start + slice;
+          ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, r, start, end); ctx.closePath();
+          ctx.fillStyle = i % 2 === 0 ? '#22232b' : '#191a21'; ctx.fill();
+          ctx.strokeStyle = 'rgba(255,255,255,.105)'; ctx.lineWidth = 1; ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(0,0); ctx.lineTo(Math.cos(start)*r,Math.sin(start)*r);
+          ctx.strokeStyle = f.color + '92'; ctx.lineWidth = 1.4; ctx.stroke();
+          const mid = start + slice / 2;
+          ctx.save(); ctx.rotate(mid); ctx.translate(r * .72, 0);
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillStyle = f.color; ctx.font = '500 8px "DM Mono", monospace';
+          ctx.fillText(f.tag, 0, 0, r * .54); ctx.restore();
+        });
+        ctx.beginPath(); ctx.arc(0,0,r-1,0,TAU); ctx.strokeStyle='rgba(255,255,255,.23)'; ctx.lineWidth=2; ctx.stroke();
+        for(let i=0;i<24;i++){ const a=i*TAU/24; const x=Math.cos(a)*(r-5),y=Math.sin(a)*(r-5); ctx.beginPath();ctx.arc(x,y,i%2===0?1.5:1,0,TAU);ctx.fillStyle=i%2===0?'#d5ff3f':'rgba(255,255,255,.45)';ctx.fill(); }
+        ctx.restore();
+      }
+
+      function ensureAudio() {
+        if (!audioContext) {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (AC) audioContext = new AC();
+        }
+        if (audioContext && audioContext.state === 'suspended') audioContext.resume();
+      }
+      function tone(freq, duration=.09, type='sine', volume=.045, endFreq=null, delay=0) {
+        if (!soundOn || !audioContext) return;
+        const t = audioContext.currentTime + delay;
+        const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+        osc.type = type; osc.frequency.setValueAtTime(freq,t);
+        if(endFreq) osc.frequency.exponentialRampToValueAtTime(Math.max(20,endFreq),t+duration);
+        gain.gain.setValueAtTime(.0001,t); gain.gain.exponentialRampToValueAtTime(volume,t+.008);
+        gain.gain.exponentialRampToValueAtTime(.0001,t+duration);
+        osc.connect(gain); gain.connect(audioContext.destination); osc.start(t); osc.stop(t+duration+.02);
+      }
+      function clickSound() { tone(510,.045,'triangle',.025,310); }
+      function tickSound(speed) { const pitch=300+Math.max(0,speed)*170; tone(pitch,.045,'square',.018,pitch*.56); }
+      function winSound() { tone(440,.2,'sine',.06,660); tone(660,.23,'triangle',.045,990,.11); tone(990,.42,'sine',.035,1320,.23); }
+      soundToggle.addEventListener('click', () => {
+        soundOn = !soundOn;
+        if(soundOn) { ensureAudio(); tone(520,.08,'sine',.03,760); }
+        soundToggle.setAttribute('aria-pressed', String(soundOn));
+        soundToggle.setAttribute('aria-label', soundOn ? 'Turn sound off' : 'Turn sound on');
+        document.getElementById('soundLabel').textContent = soundOn ? 'SOUND ON' : 'SOUND OFF';
+      });
+      function popParticles(color) {
+        const box = wheel.getBoundingClientRect(), cx = box.left + box.width/2, cy = box.top + box.height/2;
+        for(let i=0;i<92;i++){
+          const angle=Math.random()*TAU, speed=2+Math.random()*8;
+          particles.push({x:cx,y:cy,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:45+Math.random()*35,max:80,size:2+Math.random()*4,color:Math.random()>.33?color:fates[Math.floor(Math.random()*fates.length)].color,rot:Math.random()*TAU,spin:(Math.random()-.5)*.2});
+        }
+        if(particles.length>450) particles=particles.slice(-450);
+      }
+      function animateParticles() {
+        const dpr=Math.min(window.devicePixelRatio||1,2);
+        pctx.clearRect(0,0,innerWidth,innerHeight);
+        particles=particles.filter(p=>p.life>0);
+        particles.forEach(p=>{
+          p.x+=p.vx; p.y+=p.vy; p.vy+=.13; p.vx*=.989; p.life--; p.rot+=p.spin;
+          pctx.save(); pctx.globalAlpha=Math.min(1,p.life/17); pctx.translate(p.x,p.y);pctx.rotate(p.rot);
+          pctx.fillStyle=p.color;pctx.fillRect(-p.size/2,-p.size/2,p.size,p.size*1.65);pctx.restore();
+        });
+        if(particles.length) requestAnimationFrame(animateParticles);
+      }
+      function burst(color) { popParticles(color); requestAnimationFrame(animateParticles); }
+      function currentIndex() {
+        let a = ((-rotation % TAU) + TAU) % TAU;
+        return Math.floor(a / slice) % fates.length;
+      }
+      function updateTick() {
+        const idx=currentIndex();
+        if(idx!==lastTickSlice) { lastTickSlice=idx; tickSound(Math.min(1,Math.abs(rotation%TAU))); }
+      }
+      function doSpin() {
+        if(spinning) return;
+        if(soundOn) ensureAudio();
+        clickSound(); spinning=true; spinButton.disabled=true;
+        spinButton.innerHTML='DESTINY IN MOTION <span aria-hidden="true">...</span>';
+        document.getElementById('spinNote').textContent='The universe is making a decision...';
+        document.getElementById('resultPanel').classList.remove('revealed');
+        const chosen=Math.floor(Math.random()*fates.length);
+        const start=rotation;
+        const targetMod=(TAU-((chosen+.5)*slice))%TAU;
+        const currentMod=((start%TAU)+TAU)%TAU;
+        const delta=((targetMod-currentMod)%TAU+TAU)%TAU;
+        const total=start+(TAU*(6+Math.floor(Math.random()*3)))+delta;
+        const duration=reducedMotion?950:5600+Math.random()*1000;
+        const startTime=performance.now();
+        const ease=t=>1-Math.pow(1-t,4.4);
+        lastTickSlice=currentIndex();
+        function frame(now){
+          const t=Math.min(1,(now-startTime)/duration);
+          rotation=start+(total-start)*ease(t); drawWheel();
+          if(!reducedMotion && t<.94 && Math.random()<.018) updateTick();
+          if(t<1) requestAnimationFrame(frame);
+          else finishSpin(chosen);
+        }
+        requestAnimationFrame(frame);
+      }
+      function finishSpin(chosen) {
+        rotation=((rotation%TAU)+TAU)%TAU; drawWheel(); spinning=false; spinButton.disabled=false;
+        spinButton.innerHTML='SPIN AGAIN <span aria-hidden="true">↗</span>';
+        const fate=fates[chosen]; spins++;
+        document.getElementById('spinCount').textContent=String(spins).padStart(2,'0');
+        document.getElementById('resultIcon').textContent=fate.icon;
+        document.querySelector('.result-label').textContent='THE WHEEL HAS SPOKEN';
+        document.getElementById('resultValue').textContent=fate.title;
+        document.getElementById('resultIndex').textContent=String(chosen+1).padStart(2,'0')+' / 12';
+        document.getElementById('spinNote').textContent='A fate has been assigned. There is no undo.';
+        const panel=document.getElementById('resultPanel'); panel.classList.remove('revealed'); void panel.offsetWidth; panel.classList.add('revealed');
+        if(!reducedMotion){ shell.classList.remove('shake'); void shell.offsetWidth; shell.classList.add('shake'); }
+        burst(fate.color); winSound();
+        history.unshift(fate.tag); history=history.slice(0,3); renderHistory();
+        const streak=document.querySelectorAll('.streak b');
+        streak[(spins-1)%5].classList.add('active');
+        document.getElementById('luckText').textContent=['PROMISINGLY ODD','MILDLY CURSED','COSMICALLY RANDOM','ABSOLUTELY FATED','CHAOS CONFIRMED'][(spins-1)%5];
+      }
+      function renderHistory(){
+        document.getElementById('historyEmpty').style.display=history.length?'none':'inline';
+        document.getElementById('historyItems').innerHTML=history.map((item,i)=>'<span class="history-chip" title="'+item.replaceAll('"','&quot;')+'">'+item+'</span>').join('');
+      }
+      spinButton.addEventListener('click',doSpin);
+      window.addEventListener('resize',fitCanvas,{passive:true});
+      if('ResizeObserver' in window) new ResizeObserver(fitCanvas).observe(wheel);
+      fitCanvas();
+    })();
+  </script>
+</body>
+</html>
